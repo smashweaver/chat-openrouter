@@ -1,9 +1,12 @@
-import React from 'react'
+import React from 'react';
+import ChatBotStart from './components/ChatBotStart';
 
 const App = () => {
   return (
-    <div>App</div>
-  )
-}
+    <div className="container">
+      <ChatBotStart />
+    </div>
+  );
+};
 
-export default App
+export default App;
