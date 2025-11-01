@@ -16,9 +16,9 @@
   font-weight: bold;
   color: #eee;
   text-transform: uppercase;
-  letter-spacing: .1rem;
-  text-shadow: 0 1rem 2rem rgba(0, 0, 0, .2);
-  box-shadow: 0 2rem 5rem rgba(0, 0, 0, .2);
+  letter-spacing: 0.1rem;
+  text-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.2);
   cursor: pointer;
   transition: transform 0.1s ease;
 }
