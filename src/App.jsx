@@ -5,10 +5,19 @@ import ChatBotApp from "./components/ChatBotApp";
 const App = () => {
   const [isChatting, setIsChatting] = useState(false);
   const [chats, setChats] = useState([]);
+  const [activeChat, setActiveChat] = useState(null);
 
   const handleStartChat = () => {
     setIsChatting(true);
 
+    if (chats.length === 0) {
+      createNewChat();
+    }
+  };
+
+  const handleGoBack = () => setIsChatting(false);
+
+  const createNewChat = () => {
     // chat data structure: { id, messages }
     const newChat = {
       id: `chat ${new Date().toLocaleDateString(
@@ -17,15 +26,22 @@ const App = () => {
       messages: [],
     };
 
-    setChats([newChat]);
+    const updatedChats = [newChat, ...chats];
+    setChats(updatedChats);
+    setActiveChat(newChat.id);
   };
-
-  const handleGoBack = () => setIsChatting(false);
 
   return (
     <div className="container">
       {isChatting ? (
-        <ChatBotApp onGoBack={handleGoBack} chats={chats} setChats={setChats} />
+        <ChatBotApp
+          chats={chats}
+          setChats={setChats}
+          activeChat={activeChat}
+          setActiveChat={setActiveChat}
+          onGoBack={handleGoBack}
+          onNewChat={createNewChat}
+        />
       ) : (
         <ChatBotStart onStartChat={handleStartChat} />
       )}

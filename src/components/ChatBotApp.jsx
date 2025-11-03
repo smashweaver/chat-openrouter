@@ -1,33 +1,49 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./ChatBotApp.css";
 
-const ChatBotApp = ({ onGoBack, chats, setChats }) => {
+const ChatBotApp = ({
+  chats,
+  setChats,
+  activeChat,
+  setActiveChat,
+  onGoBack,
+  onNewChat,
+}) => {
   const [inputValue, setInputValue] = useState("");
-  const messages = chats[0]?.messages || [];
+  const [messages, setMessages] = useState();
 
   const handleInputValue = (e) => {
     setInputValue(e.target.value);
   };
 
   const sendMessage = () => {
+    // Prevent sending empty messages
     if (inputValue.trim() === "") return;
 
+    // Create a new message object with user prompt
     const newMessage = {
       type: "prompt",
       text: inputValue,
       timestamp: new Date().toLocaleTimeString(),
     };
 
+    // Create new messages array using spread operator for immutability
     const updatedMessages = [...messages, newMessage];
+
+    // Clear the input field after sending
     setInputValue("");
 
-    const updatedChats = chats.map((chat, index) => {
-      if (index === 0) {
+    // Create new chats array using map() for immutability
+    // Only update the active chat while preserving other chats
+    const updatedChats = chats.map((chat) => {
+      if (chat.id === activeChat) {
+        // Create new chat object with updated messages using spread operator
         return { ...chat, messages: updatedMessages };
       }
-      return chat;
+      return chat; // Return unchanged chat objects
     });
 
+    // Update the state with the modified chats array
     setChats(updatedChats);
   };
 
@@ -38,18 +54,29 @@ const ChatBotApp = ({ onGoBack, chats, setChats }) => {
     }
   };
 
+  const handleSelectChat = (id) => setActiveChat(id);
+
+  // init messages state
+  useEffect(() => {
+    const activeChatObj = chats.find((chat) => chat.id === activeChat);
+    setMessages(activeChatObj ? activeChatObj.messages : []);
+  }, [activeChat, chats]);
+
   return (
     <div className="chat-app">
       <div className="chat-list">
         <div className="chat-list-header">
           <h2>Chat List</h2>
-          <i className="bx bx-edit-alt new-chat"></i>
+          <i className="bx bx-edit-alt new-chat" onClick={onNewChat}></i>
         </div>
 
-        {chats.map((chat, index) => (
+        {chats.map((chat) => (
           <div
-            key={index}
-            className={`chat-list-item ${index === 0 ? "active" : ""}`}
+            key={chat.id}
+            className={`chat-list-item ${
+              chat.id === activeChat ? "active" : ""
+            }`}
+            onClick={() => handleSelectChat(chat.id)}
           >
             <h4>{chat.id}</h4>
             <i className="bx bx-x-circle"></i>
@@ -64,7 +91,7 @@ const ChatBotApp = ({ onGoBack, chats, setChats }) => {
         </div>
 
         <div className="chat">
-          {messages.map((message, index) => (
+          {(messages ?? []).map((message, index) => (
             <div
               key={index}
               className={message.type === "prompt" ? "prompt" : "response"}
