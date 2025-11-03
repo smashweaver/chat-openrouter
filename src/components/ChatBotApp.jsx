@@ -56,6 +56,21 @@ const ChatBotApp = ({
 
   const handleSelectChat = (id) => setActiveChat(id);
 
+  const handleDeleteChat = (id) => {
+    const updatedChats = chats.filter((chat) => chat.id !== id);
+    setChats(updatedChats);
+
+    if (activeChat === id) {
+      const newActiveChat = updatedChats.length > 0 ? updatedChats[0].id : null;
+      setActiveChat(newActiveChat);
+    }
+  };
+
+  const handleNewChat = (e) => {
+    e.stopPropagation();
+    onNewChat();
+  };
+
   // init messages state
   useEffect(() => {
     const activeChatObj = chats.find((chat) => chat.id === activeChat);
@@ -67,7 +82,7 @@ const ChatBotApp = ({
       <div className="chat-list">
         <div className="chat-list-header">
           <h2>Chat List</h2>
-          <i className="bx bx-edit-alt new-chat" onClick={onNewChat}></i>
+          <i className="bx bx-edit-alt new-chat" onClick={handleNewChat}></i>
         </div>
 
         {chats.map((chat) => (
@@ -78,8 +93,14 @@ const ChatBotApp = ({
             }`}
             onClick={() => handleSelectChat(chat.id)}
           >
-            <h4>{chat.id}</h4>
-            <i className="bx bx-x-circle"></i>
+            <h4>{chat.displayId}</h4>
+            <i
+              className="bx bx-x-circle"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteChat(chat.id);
+              }}
+            ></i>
           </div>
         ))}
       </div>

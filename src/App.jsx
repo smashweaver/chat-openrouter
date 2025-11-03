@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import ChatBotStart from "./components/ChatBotStart";
 import ChatBotApp from "./components/ChatBotApp";
+import { v4 as uuidv4 } from "uuid";
 
 const App = () => {
   const [isChatting, setIsChatting] = useState(false);
@@ -18,9 +19,10 @@ const App = () => {
   const handleGoBack = () => setIsChatting(false);
 
   const createNewChat = () => {
-    // chat data structure: { id, messages }
+    // chat data structure: { id, displayId, messages }
     const newChat = {
-      id: `chat ${new Date().toLocaleDateString(
+      id: uuidv4(),
+      displayId: `chat ${new Date().toLocaleDateString(
         "en-GB"
       )} ${new Date().toLocaleTimeString()}`,
       messages: [],
