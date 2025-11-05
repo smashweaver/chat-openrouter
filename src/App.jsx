@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ChatBotStart from "./components/ChatBotStart";
 import ChatBotApp from "./components/ChatBotApp";
-import { Chat } from "./utils/chat";
+import { newChat } from "./utils/chat";
 
 const App = () => {
   const [isChatting, setIsChatting] = useState(false);
@@ -18,8 +18,8 @@ const App = () => {
 
   const handleGoBack = () => setIsChatting(false);
 
-  const createNewChat = () => {
-    const chat = Chat.create();
+  const createNewChat = (message) => {
+    const chat = newChat(message);
     const updatedChats = [chat, ...chats];
     setChats(updatedChats);
     setActiveChat(chat.id);

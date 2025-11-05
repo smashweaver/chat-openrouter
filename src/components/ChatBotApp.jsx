@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import debounce from "../utils/debounce";
+import { newMessage } from "../utils/chat";
 import "./ChatBotApp.css";
 
 const ChatBotApp = ({
@@ -22,30 +23,30 @@ const ChatBotApp = ({
     if (inputValue.trim() === "") return;
 
     // Create a new message object with user prompt
-    const newMessage = {
-      type: "prompt",
-      text: inputValue,
-      timestamp: new Date().toLocaleTimeString(),
-    };
+    const message = newMessage(inputValue);
 
-    // Create new messages array using spread operator for immutability
-    const updatedMessages = [...messages, newMessage];
+    if (!activeChat) {
+      onNewChat(message);
+    } else {
+      // Create new messages array using spread operator for immutability
+      const updatedMessages = [...messages, message];
+
+      // Create new chats array using map() for immutability
+      // Only update the active chat while preserving other chats
+      const updatedChats = chats.map((chat) => {
+        if (chat.id === activeChat) {
+          // Create new chat object with updated messages using spread operator
+          return { ...chat, messages: updatedMessages };
+        }
+        return chat; // Return unchanged chat objects
+      });
+
+      // Update the state with the modified chats array
+      setChats(updatedChats);
+    }
 
     // Clear the input field after sending
     setInputValue("");
-
-    // Create new chats array using map() for immutability
-    // Only update the active chat while preserving other chats
-    const updatedChats = chats.map((chat) => {
-      if (chat.id === activeChat) {
-        // Create new chat object with updated messages using spread operator
-        return { ...chat, messages: updatedMessages };
-      }
-      return chat; // Return unchanged chat objects
-    });
-
-    // Update the state with the modified chats array
-    setChats(updatedChats);
   };
 
   const handleKeyDown = (e) => {
