@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import debounce from "../utils/debounce";
 import "./ChatBotApp.css";
 
 const ChatBotApp = ({
@@ -66,10 +67,16 @@ const ChatBotApp = ({
     }
   };
 
+  const debouncedSelectChat = debounce(handleSelectChat, 100);
+
+  const debouncedDeleteChat = debounce(handleDeleteChat, 100);
+
   const handleNewChat = (e) => {
     e.stopPropagation();
     onNewChat();
   };
+
+  const debouncedNewChat = debounce(handleNewChat, 100);
 
   // init messages state
   useEffect(() => {
@@ -82,7 +89,7 @@ const ChatBotApp = ({
       <div className="chat-list">
         <div className="chat-list-header">
           <h2>Chat List</h2>
-          <i className="bx bx-edit-alt new-chat" onClick={handleNewChat}></i>
+          <i className="bx bx-edit-alt new-chat" onClick={debouncedNewChat}></i>
         </div>
 
         {chats.map((chat) => (
@@ -91,14 +98,14 @@ const ChatBotApp = ({
             className={`chat-list-item ${
               chat.id === activeChat ? "active" : ""
             }`}
-            onClick={() => handleSelectChat(chat.id)}
+            onClick={() => debouncedSelectChat(chat.id)}
           >
             <h4>{chat.displayId}</h4>
             <i
               className="bx bx-x-circle"
               onClick={(e) => {
                 e.stopPropagation();
-                handleDeleteChat(chat.id);
+                debouncedDeleteChat(chat.id);
               }}
             ></i>
           </div>
