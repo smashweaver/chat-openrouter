@@ -1,44 +1,24 @@
-import React, { useState } from "react";
+import React, { Activity, useContext } from "react";
 import ChatBotStart from "./components/ChatBotStart";
 import ChatBotApp from "./components/ChatBotApp";
-import { newChat } from "./utils/chat";
+import UIContext from "./contexts/UIContext";
 
 const App = () => {
-  const [isChatting, setIsChatting] = useState(false);
-  const [chats, setChats] = useState([]);
-  const [activeChat, setActiveChat] = useState(null);
+  const { isChatting, goBack, startChat } = useContext(UIContext);
 
-  const handleStartChat = () => {
-    setIsChatting(true);
+  const handleStartChat = () => startChat();
 
-    if (chats.length === 0) {
-      createNewChat();
-    }
-  };
-
-  const handleGoBack = () => setIsChatting(false);
-
-  const createNewChat = (message) => {
-    const chat = newChat(message);
-    const updatedChats = [chat, ...chats];
-    setChats(updatedChats);
-    setActiveChat(chat.id);
-  };
+  const handleGoBack = () => goBack();
 
   return (
     <div className="container">
-      {isChatting ? (
-        <ChatBotApp
-          chats={chats}
-          setChats={setChats}
-          activeChat={activeChat}
-          setActiveChat={setActiveChat}
-          onGoBack={handleGoBack}
-          onNewChat={createNewChat}
-        />
-      ) : (
+      <Activity mode={isChatting ? "visible" : "hidden"}>
+        <ChatBotApp onGoBack={handleGoBack} />
+      </Activity>
+
+      <Activity mode={isChatting ? "hidden" : "visible"}>
         <ChatBotStart onStartChat={handleStartChat} />
-      )}
+      </Activity>
     </div>
   );
 };

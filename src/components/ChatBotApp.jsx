@@ -1,53 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useContext, useState, useEffect } from "react";
+
 import debounce from "../utils/debounce";
+import ChatContext from "../contexts/ChatContext";
 import { newMessage } from "../utils/chat";
+
 import "./ChatBotApp.css";
 
-const ChatBotApp = ({
-  chats,
-  setChats,
-  activeChat,
-  setActiveChat,
-  onGoBack,
-  onNewChat,
-}) => {
+const ChatBotApp = ({ onGoBack }) => {
   const [inputValue, setInputValue] = useState("");
-  const [messages, setMessages] = useState();
+  const [messages, setMessages] = useState([]);
 
-  const handleInputValue = (e) => {
-    setInputValue(e.target.value);
-  };
+  const {
+    activeChat,
+    chats,
+    activateChat,
+    createChat,
+    deleteChat,
+    addMessage,
+  } = useContext(ChatContext);
 
-  const sendMessage = () => {
-    // Prevent sending empty messages
-    if (inputValue.trim() === "") return;
+  const onNewChat = useCallback(() => createChat(), [createChat]);
 
-    // Create a new message object with user prompt
-    const message = newMessage(inputValue);
+  const handleActivateChat = (chatId) => activateChat(chatId);
 
-    if (!activeChat) {
-      onNewChat(message);
-    } else {
-      // Create new messages array using spread operator for immutability
-      const updatedMessages = [...messages, message];
-
-      // Create new chats array using map() for immutability
-      // Only update the active chat while preserving other chats
-      const updatedChats = chats.map((chat) => {
-        if (chat.id === activeChat) {
-          // Create new chat object with updated messages using spread operator
-          return { ...chat, messages: updatedMessages };
-        }
-        return chat; // Return unchanged chat objects
-      });
-
-      // Update the state with the modified chats array
-      setChats(updatedChats);
-    }
-
-    // Clear the input field after sending
-    setInputValue("");
-  };
+  const handleDeleteChat = (chatId) => deleteChat(chatId);
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
@@ -56,33 +32,34 @@ const ChatBotApp = ({
     }
   };
 
-  const handleSelectChat = (id) => setActiveChat(id);
-
-  const handleDeleteChat = (id) => {
-    const updatedChats = chats.filter((chat) => chat.id !== id);
-    setChats(updatedChats);
-
-    if (activeChat === id) {
-      const newActiveChat = updatedChats.length > 0 ? updatedChats[0].id : null;
-      setActiveChat(newActiveChat);
-    }
-  };
-
-  const debouncedSelectChat = debounce(handleSelectChat, 100);
-
-  const debouncedDeleteChat = debounce(handleDeleteChat, 100);
-
   const handleNewChat = (e) => {
     e.stopPropagation();
     onNewChat();
   };
 
+  const handleInputValue = (e) => setInputValue(e.target.value);
+
+  const debouncedSelectChat = debounce(handleActivateChat, 100);
+
+  const debouncedDeleteChat = debounce(handleDeleteChat, 100);
+
   const debouncedNewChat = debounce(handleNewChat, 100);
 
-  // init messages state
+  const sendMessage = () => {
+    if (inputValue.trim() === "") return;
+
+    addMessage(newMessage(inputValue));
+
+    setInputValue("");
+  };
+
   useEffect(() => {
-    const activeChatObj = chats.find((chat) => chat.id === activeChat);
-    setMessages(activeChatObj ? activeChatObj.messages : []);
+    let chat = chats.find((c) => c.id === activeChat);
+    if (chat) {
+      setMessages(chat.messages);
+    } else {
+      setMessages([]);
+    }
   }, [activeChat, chats]);
 
   return (
@@ -120,7 +97,7 @@ const ChatBotApp = ({
         </div>
 
         <div className="chat">
-          {(messages ?? []).map((message, index) => (
+          {messages.map((message, index) => (
             <div
               key={index}
               className={message.type === "prompt" ? "prompt" : "response"}
