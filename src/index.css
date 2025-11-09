@@ -1,9 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Outfit:wght@100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Outfit:wght@100..900&display=swap");
 
 :root {
   --gradient-primary: linear-gradient(135deg, #f42f5f, #8e25bf);
-  --gradient-prompt: linear-gradient(135deg, #f42f5f, #8e25bf);
-  --gradient-response: linear-gradient(135deg, #fe8d5c, #fe4d57);
+  --gradient-start-button: linear-gradient(135deg, #f42f5f, #8e25bf);
+  --gradient-prompt: linear-gradient(135deg, #aa0ef3, #4b2e58);
+  --gradient-response: linear-gradient(135deg, #1e2537, #074cf8);
+  --gradient-form: linear-gradient(135deg, #1e2537, #0a2f86);
 }
 
 * {
@@ -11,7 +13,7 @@
   padding: 0;
   box-sizing: border-box;
   outline: none;
-  font-family: 'Outfit', sans-serif;
+  font-family: "Exo 2", sans-serif;
 }
 
 html {
@@ -19,9 +21,9 @@ html {
 }
 
 .container {
-width: 100%;
-height: 100vh;
-display: grid;
-place-items: center;
-background: #131927;
+  width: 100%;
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  background: #131927;
 }

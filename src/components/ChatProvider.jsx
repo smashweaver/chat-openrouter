@@ -1,6 +1,6 @@
 import React from "react";
 import ChatContext from "../contexts/ChatContext";
-import { useChat } from "../contexts/chatReducer";
+import { useChat } from "../hooks/UseChat";
 
 const ChatProvider = ({ children }) => {
   const chat = useChat();

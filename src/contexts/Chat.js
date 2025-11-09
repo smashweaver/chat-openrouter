@@ -13,8 +13,7 @@ export function newChat(message) {
   };
 }
 
-// type: "prompt" | "response"
-export function newMessage(text, type = "prompt") {
+function newMessage(text, type) {
   const now = new Date();
   const message = {
     type: type,
@@ -23,4 +22,12 @@ export function newMessage(text, type = "prompt") {
   };
 
   return message;
+}
+
+export function newResponse(text) {
+  return newMessage(text, "response");
+}
+
+export function newPrompt(text) {
+  return newMessage(text, "prompt");
 }

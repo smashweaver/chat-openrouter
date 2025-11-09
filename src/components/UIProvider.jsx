@@ -1,6 +1,6 @@
 import React from "react";
 import UIContext from "../contexts/UIContext";
-import { useUI } from "../contexts/uiReducer";
+import { useUI } from "../hooks/UseUI";
 
 const UIProvider = ({ children }) => {
   const ui = useUI();

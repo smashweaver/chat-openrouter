@@ -1,14 +1,24 @@
-import React, { useCallback, useContext, useState, useEffect } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+} from "react";
 
 import debounce from "../utils/debounce";
 import ChatContext from "../contexts/ChatContext";
-import { newMessage } from "../utils/chat";
+import { chatStream } from "../utils/openai";
+import { newPrompt, newResponse } from "../contexts/Chat";
 
 import "./ChatBotApp.css";
 
 const ChatBotApp = ({ onGoBack }) => {
   const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState([]);
+  const [streamingResponse, setStreamingResponse] = useState("");
+  const [isStreaming, setIsStreaming] = useState(false);
+  const chatEndRef = useRef(null);
 
   const {
     activeChat,
@@ -45,14 +55,45 @@ const ChatBotApp = ({ onGoBack }) => {
 
   const debouncedNewChat = debounce(handleNewChat, 100);
 
-  const sendMessage = () => {
+  const handleStreamingResponse = async (userInput) => {
+    setIsStreaming(true);
+    setStreamingResponse("");
+    let accumulatedResponse = "";
+
+    try {
+      const stream = chatStream(userInput);
+
+      for await (const chunk of stream) {
+        accumulatedResponse += chunk;
+        setStreamingResponse(accumulatedResponse);
+      }
+
+      // Stream completed successfully
+      addMessage(newResponse(accumulatedResponse));
+    } catch (error) {
+      console.error("Streaming error:", error);
+      addMessage(
+        newResponse(
+          "Sorry, I encountered an error while processing your request."
+        )
+      );
+    } finally {
+      setIsStreaming(false);
+      setStreamingResponse("");
+    }
+  };
+  const sendMessage = async () => {
     if (inputValue.trim() === "") return;
 
-    addMessage(newMessage(inputValue));
-
+    const userInput = inputValue;
     setInputValue("");
-  };
 
+    // Add user message to chat
+    addMessage(newPrompt(userInput));
+
+    // Handle streaming response
+    await handleStreamingResponse(userInput);
+  };
   useEffect(() => {
     let chat = chats.find((c) => c.id === activeChat);
     if (chat) {
@@ -61,6 +102,15 @@ const ChatBotApp = ({ onGoBack }) => {
       setMessages([]);
     }
   }, [activeChat, chats]);
+
+  useEffect(() => {
+    if (chats.length > 0) return;
+    createChat();
+  }, [chats.length, createChat]);
+
+  useEffect(() => {
+    chatEndRef?.current.scrollIntoView({ behavior: "smooth" });
+  }, [messages, streamingResponse]);
 
   return (
     <div className="chat-app">
@@ -106,7 +156,26 @@ const ChatBotApp = ({ onGoBack }) => {
             </div>
           ))}
 
-          <div className="typing">Typing...</div>
+          {/* Show streaming response in real-time */}
+          {isStreaming && streamingResponse && (
+            <div className="response">{streamingResponse}</div>
+          )}
+
+          {/* Show AI working indicator when streaming but no response yet */}
+          {isStreaming && !streamingResponse && (
+            <div className="response ai-working">
+              <div className="ai-thinking">
+                <span className="ai-thinking-text">AI is thinking</span>
+                <div className="thinking-dots">
+                  <span className="dot"></span>
+                  <span className="dot"></span>
+                  <span className="dot"></span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div ref={chatEndRef}></div>
         </div>
 
         <form className="msg-form" onSubmit={(e) => e.preventDefault()}>

@@ -8,7 +8,7 @@
 .start-page-btn {
   width: 35rem;
   height: 15rem;
-  background: var(--gradient-primary);
+  background: var(--gradient-start-button);
   border: none;
   border-radius: 1rem;
   font-family: "Exo 2", san-serif;
