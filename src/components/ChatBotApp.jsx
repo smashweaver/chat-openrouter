@@ -6,10 +6,13 @@ import React, {
   useRef,
 } from "react";
 
+import { createPortal } from "react-dom";
+
 import debounce from "../utils/debounce";
 import ChatContext from "../contexts/ChatContext";
 import { chatStream } from "../utils/openai";
 import { newPrompt, newResponse } from "../contexts/Chat";
+import EmojiPicker from "./EmojiPicker";
 
 import "./ChatBotApp.css";
 
@@ -18,6 +21,7 @@ const ChatBotApp = ({ onGoBack }) => {
   const [messages, setMessages] = useState([]);
   const [streamingResponse, setStreamingResponse] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const chatEndRef = useRef(null);
 
   const {
@@ -94,6 +98,10 @@ const ChatBotApp = ({ onGoBack }) => {
 
     // Handle streaming response
     await handleStreamingResponse(userInput);
+  };
+
+  const handleEmojiSelect = (emoji) => {
+    setInputValue((prev) => prev + emoji.native);
   };
 
   useEffect(() => {
@@ -181,7 +189,19 @@ const ChatBotApp = ({ onGoBack }) => {
         </div>
 
         <form className="msg-form" onSubmit={(e) => e.preventDefault()}>
-          <i className="fa-solid fa-face-smile emoji"></i>
+          <i
+            className="fa-solid fa-face-smile emoji"
+            onClick={() => setShowEmojiPicker((prev) => !prev)}
+          ></i>
+
+          {showEmojiPicker &&
+            createPortal(
+              <div className="picker">
+                <EmojiPicker onEmojiSelect={handleEmojiSelect}></EmojiPicker>
+              </div>,
+              document.body
+            )}
+
           <input
             type="text"
             className="msg-input"
@@ -189,6 +209,7 @@ const ChatBotApp = ({ onGoBack }) => {
             value={inputValue}
             onChange={handleInputValue}
             onKeyDown={handleKeyDown}
+            onFocus={() => setShowEmojiPicker(false)}
           />
           <i
             className="fa-solid fa-paper-plane"

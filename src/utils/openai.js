@@ -30,11 +30,11 @@ export async function* chatStream(prompt, model = "openai/gpt-oss-20b:free") {
       {
         role: "system",
         content:
-          "Break your response into multiple paragraphs. Add a blank line between each paragraph. Each paragraph should be 2-4 sentences. Always use line breaks and empty lines to separate different ideas.",
+          "Break your response into multiple paragraphs. Add a blank line between each paragraph. Each paragraph should be 2-4 sentences. Always use line breaks and empty lines to separate different ideas.  Do not use Markdown formatting in your response.",
       },
       {
         role: "user",
-        content: `${prompt} Do not use backticks or any markdown formatting in your response.`,
+        content: prompt,
       },
     ],
     stream: true,
