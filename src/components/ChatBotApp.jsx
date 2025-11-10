@@ -38,7 +38,7 @@ const ChatBotApp = ({ onGoBack }) => {
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      sendMessage();
+      handleSendMessage();
     }
   };
 
@@ -46,14 +46,6 @@ const ChatBotApp = ({ onGoBack }) => {
     e.stopPropagation();
     onNewChat();
   };
-
-  const handleInputValue = (e) => setInputValue(e.target.value);
-
-  const debouncedSelectChat = debounce(handleActivateChat, 100);
-
-  const debouncedDeleteChat = debounce(handleDeleteChat, 100);
-
-  const debouncedNewChat = debounce(handleNewChat, 100);
 
   const handleStreamingResponse = async (userInput) => {
     setIsStreaming(true);
@@ -82,7 +74,16 @@ const ChatBotApp = ({ onGoBack }) => {
       setStreamingResponse("");
     }
   };
-  const sendMessage = async () => {
+
+  const handleInputValue = (e) => setInputValue(e.target.value);
+
+  const debouncedSelectChat = debounce(handleActivateChat, 100);
+
+  const debouncedDeleteChat = debounce(handleDeleteChat, 100);
+
+  const debouncedNewChat = debounce(handleNewChat, 100);
+
+  const handleSendMessage = async () => {
     if (inputValue.trim() === "") return;
 
     const userInput = inputValue;
@@ -94,6 +95,7 @@ const ChatBotApp = ({ onGoBack }) => {
     // Handle streaming response
     await handleStreamingResponse(userInput);
   };
+
   useEffect(() => {
     let chat = chats.find((c) => c.id === activeChat);
     if (chat) {
@@ -188,7 +190,10 @@ const ChatBotApp = ({ onGoBack }) => {
             onChange={handleInputValue}
             onKeyDown={handleKeyDown}
           />
-          <i className="fa-solid fa-paper-plane" onClick={sendMessage}></i>
+          <i
+            className="fa-solid fa-paper-plane"
+            onClick={handleSendMessage}
+          ></i>
         </form>
       </div>
     </div>

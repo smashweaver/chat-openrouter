@@ -212,7 +212,7 @@
   background: var(--gradient-form);
   display: flex;
   align-items: center;
-  padding-right: 5rem;
+  padding: 1rem 5rem 1rem 2rem;
   box-shadow: 0 -0.5rem 1rem rgba(0, 0, 0, 0.3);
   border-top: 2px solid #2a3456;
   font-family: "Lato", sans-serif;
