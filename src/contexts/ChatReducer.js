@@ -4,6 +4,11 @@ import { newChat } from "./Chat";
 export const chatReducer = produce((draft, action) => {
   let chat;
   switch (action.type) {
+    case "CHAT:LOAD":
+      // Bulk state hydration from storage
+      draft.active = action.payload.active;
+      draft.chats = action.payload.chats;
+      break;
     case "CHAT:ACTIVATE":
       draft.active = action.payload;
       break;

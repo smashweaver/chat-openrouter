@@ -113,10 +113,11 @@ const ChatBotApp = ({ onGoBack }) => {
     }
   }, [activeChat, chats]);
 
-  useEffect(() => {
-    if (chats.length > 0) return;
-    createChat();
-  }, [chats.length, createChat]);
+  // Data rehydration is handled by ChatProvider
+  // useEffect(() => {
+  //   if (chats.length > 0) return;
+  //   createChat();
+  // }, [chats.length, createChat]);
 
   useEffect(() => {
     chatEndRef?.current.scrollIntoView({ behavior: "smooth" });
